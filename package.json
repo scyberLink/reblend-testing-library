@@ -14,6 +14,7 @@
     "test:single": "jest --runInBand",
     "test:watch": "jest --watch",
     "build:test": "npm run build && npm test",
+    "prepublishOnly": "npm run build",
     "build": "tsc && tsc -p tsconfig.esm.json && tsc -p tsconfig.types.json && babel dist --out-dir lib --presets=reblend && babel dist-esm --out-dir lib-esm --presets=reblend"
   },
   "files": [

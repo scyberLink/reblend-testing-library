@@ -25,7 +25,7 @@ Thanks for your interest in the project. We appreciate bugs filed and PRs submit
   * Discord
     https://discord.gg/testing-library
   * Stack Overflow
-    https://stackoverflow.com/questions/tagged/react-testing-library
+    https://stackoverflow.com/questions/tagged/reblend-testing-library
 
   **ISSUES WHICH ARE QUESTIONS WILL BE CLOSED**
 
@@ -42,7 +42,7 @@ tutorial to learn how: http://kcd.im/pull-request
 
 -->
 
-- `@testing-library/react` version:
+- `@testing-library/reblend` version:
 - Testing Framework and version:
   <!-- are you using jest, mocha, puppeteer, ava? And what version? -->
 - DOM Environment:
@@ -53,7 +53,7 @@ Keep in mind that if you're using a version of node we don't support that
 could also be an issue. Check our package.json file "engines" config for the
 supported version.
 
-Also keep in mind that if you're using a version of react we don't support
+Also keep in mind that if you're using a version of reblend we don't support
 that could be an issue. Check our package.json file "peerDependencies" config
 for the supported version.
 -->

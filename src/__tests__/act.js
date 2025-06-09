@@ -1,69 +1,50 @@
-import * as React from 'react'
-import {act, render, fireEvent, screen} from '../'
+import { Reblend, useRef, useState } from "reblendjs";
+import { render, fireEvent, screen, waitFor, queryByText } from "../";
+import { useEffect } from "reblendjs";
 
-test('render calls useEffect immediately', () => {
-  const effectCb = jest.fn()
+test("render calls useEffect immediately", async () => {
+  const effectCb = jest.fn();
+  //@reblendComponent
   function MyUselessComponent() {
-    React.useEffect(effectCb)
-    return null
+    useEffect(effectCb);
+    return <></>;
   }
-  render(<MyUselessComponent />)
-  expect(effectCb).toHaveBeenCalledTimes(1)
-})
+  await render(<MyUselessComponent />);
+  expect(effectCb).toHaveBeenCalledTimes(1);
+});
 
-test('findByTestId returns the element', async () => {
-  const ref = React.createRef()
-  render(<div ref={ref} data-testid="foo" />)
-  expect(await screen.findByTestId('foo')).toBe(ref.current)
-})
+test("findByTestId returns the element", async () => {
+  const ref = useRef();
+  await render(<div ref={ref} data-testid="foo" />);
+  expect(await screen.findByTestId("foo")).toBe(ref.current);
+});
 
-test('fireEvent triggers useEffect calls', () => {
-  const effectCb = jest.fn()
+test("fireEvent triggers useEffect calls", async () => {
+  const effectCb = jest.fn();
+  //@reblendComponent
   function Counter() {
-    React.useEffect(effectCb)
-    const [count, setCount] = React.useState(0)
-    return <button onClick={() => setCount(count + 1)}>{count}</button>
+    useEffect(effectCb);
+    const [count, setCount] = useState(0);
+    return (
+      <>
+        <button onClick={() => setCount(count + 1)}>{count}</button>
+        {count ? "Watch me change!" : "Click the button!"}
+      </>
+    );
   }
   const {
-    container: {firstChild: buttonNode},
-  } = render(<Counter />)
-
-  effectCb.mockClear()
-  fireEvent.click(buttonNode)
-  expect(buttonNode).toHaveTextContent('1')
-  expect(effectCb).toHaveBeenCalledTimes(1)
-})
-
-test('calls to hydrate will run useEffects', () => {
-  const effectCb = jest.fn()
-  function MyUselessComponent() {
-    React.useEffect(effectCb)
-    return null
-  }
-  render(<MyUselessComponent />, {hydrate: true})
-  expect(effectCb).toHaveBeenCalledTimes(1)
-})
-
-test('cleans up IS_REACT_ACT_ENVIRONMENT if its callback throws', () => {
-  global.IS_REACT_ACT_ENVIRONMENT = false
-
-  expect(() =>
-    act(() => {
-      throw new Error('threw')
-    }),
-  ).toThrow('threw')
-
-  expect(global.IS_REACT_ACT_ENVIRONMENT).toEqual(false)
-})
-
-test('cleans up IS_REACT_ACT_ENVIRONMENT if its async callback throws', async () => {
-  global.IS_REACT_ACT_ENVIRONMENT = false
-
-  await expect(() =>
-    act(async () => {
-      throw new Error('thenable threw')
-    }),
-  ).rejects.toThrow('thenable threw')
-
-  expect(global.IS_REACT_ACT_ENVIRONMENT).toEqual(false)
-})
+    container: {
+      firstChild: { firstChild: buttonNode },
+    },
+  } = await render(<Counter />);
+  effectCb.mockClear();
+  fireEvent.click(buttonNode);
+  await waitFor(async () => {
+    screen.getByText(/Click the button!/);
+  });
+  await waitFor(async () => {
+    screen.getByText(/Watch me change!/);
+  });
+  expect(buttonNode).toHaveTextContent("1");
+  expect(effectCb).toHaveBeenCalledTimes(1);
+});

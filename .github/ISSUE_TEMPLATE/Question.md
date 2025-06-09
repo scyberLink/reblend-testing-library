@@ -18,7 +18,7 @@ codesandbox to make a reproduction of your issue: https://kcd.im/rtl-help
 
 - Discord https://discord.gg/testing-library
 - Stack Overflow
-  https://stackoverflow.com/questions/tagged/react-testing-library
+  https://stackoverflow.com/questions/tagged/reblend-testing-library
 - Documentation: https://github.com/testing-library/testing-library-docs
 
 **ISSUES WHICH ARE QUESTIONS WILL BE CLOSED**

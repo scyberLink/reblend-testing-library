@@ -1,4 +1,4 @@
-// Fork of https://github.com/facebook/react/blob/513417d6951fa3ff5729302b7990b84604b11afa/scripts/jest/shouldIgnoreConsoleError.js
+// Fork of https://github.com/facebook/reblend/blob/513417d6951fa3ff5729302b7990b84604b11afa/scripts/jest/shouldIgnoreConsoleError.js
 /**
 MIT License
 
@@ -38,11 +38,11 @@ module.exports = function shouldIgnoreConsoleError(format) {
       }
       if (
         format.startsWith(
-          'Warning: `ReactDOMTestUtils.act` is deprecated in favor of `React.act`.',
+          'Warning: `ReactDOMTestUtils.act` is deprecated in favor of `Reblend.act`.',
         )
       ) {
-        // This is a React bug in 18.3.0.
-        // Versions with `ReactDOMTestUtils.ac` being deprecated, should have `React.act`
+        // This is a Reblend bug in 18.3.0.
+        // Versions with `ReactDOMTestUtils.ac` being deprecated, should have `Reblend.act`
         return true
       }
     }

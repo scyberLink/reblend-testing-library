@@ -1,9 +1,15 @@
 node_modules
 coverage
 dist
+dist-esm
+lib
+lib-esm
 .DS_Store
 
 # these cause more harm than good
 # when working with contributors
 package-lock.json
 yarn.lock
+.npmrc
+.pnpm-lock.yaml
+.pnpmfile.cjs

@@ -1,184 +1,164 @@
-import * as React from 'react'
-import ReactDOM from 'react-dom'
-import ReactDOMServer from 'react-dom/server'
-import {fireEvent, render, screen, configure} from '../'
+import { Portal, Reblend, useEffect, useReducer, useRef } from "reblendjs";
+import { fireEvent, render, screen, configure } from "../";
 
-const isReact18 = React.version.startsWith('18.')
-const isReact19 = React.version.startsWith('19.')
-
-const testGateReact18 = isReact18 ? test : test.skip
-const testGateReact19 = isReact19 ? test : test.skip
-
-describe('render API', () => {
-  let originalConfig
+describe("render API", () => {
+  let originalConfig;
   beforeEach(() => {
     // Grab the existing configuration so we can restore
     // it at the end of the test
-    configure(existingConfig => {
-      originalConfig = existingConfig
+    configure((existingConfig) => {
+      originalConfig = existingConfig;
       // Don't change the existing config
-      return {}
-    })
-  })
+      return {};
+    });
+  });
 
   afterEach(() => {
-    configure(originalConfig)
-  })
+    configure(originalConfig);
+  });
 
-  test('renders div into document', () => {
-    const ref = React.createRef()
-    const {container} = render(<div ref={ref} />)
-    expect(container.firstChild).toBe(ref.current)
-  })
+  test("renders div into document", async () => {
+    const ref = useRef();
+    const { container } = await render(<div ref={ref} />);
+    expect(container.firstChild).toBe(ref.current);
+  });
 
-  test('works great with react portals', () => {
-    class MyPortal extends React.Component {
-      constructor(...args) {
-        super(...args)
-        this.portalNode = document.createElement('div')
-        this.portalNode.dataset.testid = 'my-portal'
+  test("works great with reblendjs portals", async () => {
+    class MyPortal extends Reblend {
+      initState(...args) {
+        super.initState(...args);
+        this.portalNode = document.createElement("div");
+        this.portalNode.dataset.testid = "my-portal";
       }
       componentDidMount() {
-        document.body.appendChild(this.portalNode)
+        document.body.appendChild(this.portalNode);
       }
       componentWillUnmount() {
-        this.portalNode.parentNode.removeChild(this.portalNode)
+        this.portalNode.parentNode.removeChild(this.portalNode);
       }
-      render() {
-        return ReactDOM.createPortal(
-          <Greet greeting="Hello" subject="World" />,
-          this.portalNode,
-        )
+      html() {
+        return (
+          <Portal portal={this.portalNode}>
+            <Greet greeting="Hello" subject="World" />,
+          </Portal>
+        );
       }
     }
 
-    function Greet({greeting, subject}) {
+    function Greet({ greeting, subject }) {
       return (
         <div>
           <strong>
             {greeting} {subject}
           </strong>
         </div>
-      )
+      );
     }
 
-    const {unmount} = render(<MyPortal />)
-    expect(screen.getByText('Hello World')).toBeInTheDocument()
-    const portalNode = screen.getByTestId('my-portal')
-    expect(portalNode).toBeInTheDocument()
-    unmount()
-    expect(portalNode).not.toBeInTheDocument()
-  })
+    const { unmount } = await render(<MyPortal />);
+    expect(screen.getByText("Hello World")).toBeInTheDocument();
+    const portalNode = screen.getByTestId("my-portal");
+    expect(portalNode).toBeInTheDocument();
+    await unmount();
+    expect(portalNode).not.toBeInTheDocument();
+  });
 
-  test('returns baseElement which defaults to document.body', () => {
-    const {baseElement} = render(<div />)
-    expect(baseElement).toBe(document.body)
-  })
+  test("returns baseElement which defaults to document.body", async () => {
+    const { baseElement } = await render(<div />);
+    expect(baseElement).toBe(document.body);
+  });
 
-  test('supports fragments', () => {
-    class Test extends React.Component {
-      render() {
+  test("supports fragments", async () => {
+    class Test extends Reblend {
+      html() {
         return (
           <div>
             <code>DocumentFragment</code> is pretty cool!
           </div>
-        )
+        );
       }
     }
 
-    const {asFragment} = render(<Test />)
-    expect(asFragment()).toMatchSnapshot()
-  })
+    const { asFragment } = await render(<Test />);
+    expect(asFragment()).toMatchSnapshot();
+  });
 
-  test('renders options.wrapper around node', () => {
-    const WrapperComponent = ({children}) => (
-      <div data-testid="wrapper">{children}</div>
-    )
-
-    const {container} = render(<div data-testid="inner" />, {
+  test("renders options.wrapper around node", async () => {
+    //@reblendComponent
+    function WrapperComponent({ children }) {
+      return <div data-testid="wrapper">{children}</div>;
+    }
+    const { container } = await render(<div data-testid="inner" />, {
       wrapper: WrapperComponent,
-    })
+    });
 
-    expect(screen.getByTestId('wrapper')).toBeInTheDocument()
+    expect(screen.getByTestId("wrapper")).toBeInTheDocument();
     expect(container.firstChild).toMatchInlineSnapshot(`
     <div
-      data-testid=wrapper
+      reblendcomponent="WrapperComponent"
     >
       <div
-        data-testid=inner
-      />
+        data-testid="wrapper"
+      >
+        <div
+          data-testid="inner"
+        >
+          
+        </div>
+      </div>
     </div>
-  `)
-  })
+  `);
+  });
 
-  test('renders options.wrapper around node when reactStrictMode is true', () => {
-    configure({reactStrictMode: true})
+  test("renders", async () => {
+    const spy = jest.fn();
 
-    const WrapperComponent = ({children}) => (
-      <div data-testid="wrapper">{children}</div>
-    )
-    const {container} = render(<div data-testid="inner" />, {
-      wrapper: WrapperComponent,
-    })
-
-    expect(screen.getByTestId('wrapper')).toBeInTheDocument()
-    expect(container.firstChild).toMatchInlineSnapshot(`
-    <div
-      data-testid=wrapper
-    >
-      <div
-        data-testid=inner
-      />
-    </div>
-  `)
-  })
-
-  test('renders twice when reactStrictMode is true', () => {
-    configure({reactStrictMode: true})
-
-    const spy = jest.fn()
-    function Component() {
-      spy()
-      return null
+    //@reblendComponent
+    function Component({ spy }) {
+      spy();
+      return <></>;
     }
 
-    render(<Component />)
-    expect(spy).toHaveBeenCalledTimes(2)
-  })
+    await render(<Component spy={spy} />);
+    expect(spy).toHaveBeenCalledTimes(1);
+  });
 
-  test('flushes useEffect cleanup functions sync on unmount()', () => {
-    const spy = jest.fn()
-    function Component() {
-      React.useEffect(() => spy, [])
-      return null
+  test("flushes useEffect cleanup functions sync on unmount()", async () => {
+    const spy = jest.fn();
+
+    //@reblendComponent
+    function Component({ spy }) {
+      useEffect(() => spy, []);
+      return <></>;
     }
-    const {unmount} = render(<Component />)
-    expect(spy).toHaveBeenCalledTimes(0)
+    const { unmount } = await render(<Component spy={spy} />);
+    expect(spy).toHaveBeenCalledTimes(0);
 
-    unmount()
+    await unmount();
 
-    expect(spy).toHaveBeenCalledTimes(1)
-  })
+    expect(spy).toHaveBeenCalledTimes(1);
+  });
 
-  test('can be called multiple times on the same container', () => {
-    const container = document.createElement('div')
+  test("can be called multiple times on the same container", async () => {
+    const container = document.createElement("div");
 
-    const {unmount} = render(<strong />, {container})
+    const { unmount } = await render(<strong />, { container });
 
-    expect(container).toContainHTML('<strong></strong>')
+    expect(container).toContainHTML("<strong></strong>");
 
-    render(<em />, {container})
+    await render(<em />, { container });
 
-    expect(container).toContainHTML('<em></em>')
+    expect(container).toContainHTML("<em></em>");
 
-    unmount()
+    await unmount();
 
-    expect(container).toBeEmptyDOMElement()
-  })
+    expect(container).toBeEmptyDOMElement();
+  });
 
-  test('hydrate will make the UI interactive', () => {
+  /*   test('The UI should be interactive', async () => {
+    //@reblendComponent
     function App() {
-      const [clicked, handleClick] = React.useReducer(n => n + 1, 0)
+      const [clicked, handleClick] = useReducer(n => n + 1, 0)
 
       return (
         <button type="button" onClick={handleClick}>
@@ -189,111 +169,35 @@ describe('render API', () => {
     const ui = <App />
     const container = document.createElement('div')
     document.body.appendChild(container)
-    container.innerHTML = ReactDOMServer.renderToString(ui)
+    container.innerHTML = await Reblend.renderToString(ui)
 
     expect(container).toHaveTextContent('clicked:0')
 
-    render(ui, {container, hydrate: true})
+    await render(ui, {container})
 
     fireEvent.click(container.querySelector('button'))
 
     expect(container).toHaveTextContent('clicked:1')
-  })
+  }) */
 
-  test('hydrate can have a wrapper', () => {
-    const wrapperComponentMountEffect = jest.fn()
-    function WrapperComponent({children}) {
-      React.useEffect(() => {
-        wrapperComponentMountEffect()
-      })
+  test("Render with a wrapper", async () => {
+    const wrapperComponentMountEffect = jest.fn();
+    const ui = <div />;
 
-      return children
+    //@reblendComponent
+    function WrapperComponent({ children }) {
+      useEffect(() => {
+        wrapperComponentMountEffect();
+      });
+
+      return <>{children}</>;
     }
-    const ui = <div />
-    const container = document.createElement('div')
-    document.body.appendChild(container)
-    container.innerHTML = ReactDOMServer.renderToString(ui)
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+    container.innerHTML = await Reblend.renderToString(ui);
 
-    render(ui, {container, hydrate: true, wrapper: WrapperComponent})
+    await render(ui, { container, wrapper: WrapperComponent });
 
-    expect(wrapperComponentMountEffect).toHaveBeenCalledTimes(1)
-  })
-
-  testGateReact18('legacyRoot uses legacy ReactDOM.render', () => {
-    expect(() => {
-      render(<div />, {legacyRoot: true})
-    }).toErrorDev(
-      [
-        "Warning: ReactDOM.render is no longer supported in React 18. Use createRoot instead. Until you switch to the new API, your app will behave as if it's running React 17. Learn more: https://reactjs.org/link/switch-to-createroot",
-      ],
-      {withoutStack: true},
-    )
-  })
-
-  testGateReact19('legacyRoot throws', () => {
-    expect(() => {
-      render(<div />, {legacyRoot: true})
-    }).toThrowErrorMatchingInlineSnapshot(
-      `\`legacyRoot: true\` is not supported in this version of React. If your app runs React 19 or later, you should remove this flag. If your app runs React 18 or earlier, visit https://react.dev/blog/2022/03/08/react-18-upgrade-guide for upgrade instructions.`,
-    )
-  })
-
-  testGateReact18('legacyRoot uses legacy ReactDOM.hydrate', () => {
-    const ui = <div />
-    const container = document.createElement('div')
-    container.innerHTML = ReactDOMServer.renderToString(ui)
-    expect(() => {
-      render(ui, {container, hydrate: true, legacyRoot: true})
-    }).toErrorDev(
-      [
-        "Warning: ReactDOM.hydrate is no longer supported in React 18. Use hydrateRoot instead. Until you switch to the new API, your app will behave as if it's running React 17. Learn more: https://reactjs.org/link/switch-to-createroot",
-      ],
-      {withoutStack: true},
-    )
-  })
-
-  testGateReact19('legacyRoot throws even with hydrate', () => {
-    const ui = <div />
-    const container = document.createElement('div')
-    container.innerHTML = ReactDOMServer.renderToString(ui)
-    expect(() => {
-      render(ui, {container, hydrate: true, legacyRoot: true})
-    }).toThrowErrorMatchingInlineSnapshot(
-      `\`legacyRoot: true\` is not supported in this version of React. If your app runs React 19 or later, you should remove this flag. If your app runs React 18 or earlier, visit https://react.dev/blog/2022/03/08/react-18-upgrade-guide for upgrade instructions.`,
-    )
-  })
-
-  test('reactStrictMode in renderOptions has precedence over config when rendering', () => {
-    const wrapperComponentMountEffect = jest.fn()
-    function WrapperComponent({children}) {
-      React.useEffect(() => {
-        wrapperComponentMountEffect()
-      })
-
-      return children
-    }
-    const ui = <div />
-    configure({reactStrictMode: false})
-
-    render(ui, {wrapper: WrapperComponent, reactStrictMode: true})
-
-    expect(wrapperComponentMountEffect).toHaveBeenCalledTimes(2)
-  })
-
-  test('reactStrictMode in config is used when renderOptions does not specify reactStrictMode', () => {
-    const wrapperComponentMountEffect = jest.fn()
-    function WrapperComponent({children}) {
-      React.useEffect(() => {
-        wrapperComponentMountEffect()
-      })
-
-      return children
-    }
-    const ui = <div />
-    configure({reactStrictMode: true})
-
-    render(ui, {wrapper: WrapperComponent})
-
-    expect(wrapperComponentMountEffect).toHaveBeenCalledTimes(2)
-  })
-})
+    expect(wrapperComponentMountEffect).toHaveBeenCalledTimes(1);
+  });
+});

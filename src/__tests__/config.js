@@ -42,25 +42,25 @@ describe('configuration API', () => {
 
   describe('RTL options', () => {
     test('configure can set by a plain JS object', () => {
-      configure({reactStrictMode: true})
+      configure({reblendStrictMode: true})
 
-      expect(getConfig().reactStrictMode).toBe(true)
+      expect(getConfig().reblendStrictMode).toBe(true)
     })
 
     test('configure can set by a function', () => {
       configure(existingConfig => ({
-        reactStrictMode: !existingConfig.reactStrictMode,
+        reblendStrictMode: !existingConfig.reblendStrictMode,
       }))
 
-      expect(getConfig().reactStrictMode).toBe(true)
+      expect(getConfig().reblendStrictMode).toBe(true)
     })
   })
 
   test('configure can set DTL and RTL options at once', () => {
     const testIdAttribute = 'not-data-testid'
-    configure({testIdAttribute, reactStrictMode: true})
+    configure({testIdAttribute, reblendStrictMode: true})
 
     expect(getConfig().testIdAttribute).toBe(testIdAttribute)
-    expect(getConfig().reactStrictMode).toBe(true)
+    expect(getConfig().reblendStrictMode).toBe(true)
   })
 })

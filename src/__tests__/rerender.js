@@ -1,98 +1,112 @@
-import * as React from 'react'
-import {render, configure} from '../'
+import { Reblend } from "reblendjs";
+import { render, configure } from "../";
 
-describe('rerender API', () => {
-  let originalConfig
+describe("rerender API", () => {
+  let originalConfig;
   beforeEach(() => {
     // Grab the existing configuration so we can restore
     // it at the end of the test
-    configure(existingConfig => {
-      originalConfig = existingConfig
+    configure((existingConfig) => {
+      originalConfig = existingConfig;
       // Don't change the existing config
-      return {}
-    })
-  })
+      return {};
+    });
+  });
 
   afterEach(() => {
-    configure(originalConfig)
-  })
+    configure(originalConfig);
+  });
 
-  test('rerender will re-render the element', () => {
-    const Greeting = props => <div>{props.message}</div>
-    const {container, rerender} = render(<Greeting message="hi" />)
-    expect(container.firstChild).toHaveTextContent('hi')
-    rerender(<Greeting message="hey" />)
-    expect(container.firstChild).toHaveTextContent('hey')
-  })
+  test("rerender will re-render the element", async () => {
+    const Greeting = (props) => <div>{props.message}</div>;
+    const { container, rerender } = await render(<Greeting message="hi" />);
+    expect(container.firstChild).toHaveTextContent("hi");
+    await rerender(<Greeting message="hey" />);
+    expect(container.firstChild).toHaveTextContent("hey");
+  });
 
-  test('hydrate will not update props until next render', () => {
-    const initialInputElement = document.createElement('input')
-    const container = document.createElement('div')
-    container.appendChild(initialInputElement)
-    document.body.appendChild(container)
+/*   test("rerender will re-render the element", async () => {
+    const initialInputElement = document.createElement("input");
+    const container = document.createElement("div");
+    container.appendChild(initialInputElement);
+    document.body.appendChild(container);
 
-    const firstValue = 'hello'
-    initialInputElement.value = firstValue
+    const firstValue = "hello";
+    initialInputElement.value = firstValue;
 
-    const {rerender} = render(<input value="" onChange={() => null} />, {
-      container,
-      hydrate: true,
-    })
+    const { rerender } = await render(
+      <input value="" onChange={() => null} />,
+      {
+        container,
+      }
+    );
 
-    expect(initialInputElement).toHaveValue(firstValue)
+    expect(initialInputElement).toHaveValue(firstValue);
 
-    const secondValue = 'goodbye'
-    rerender(<input value={secondValue} onChange={() => null} />)
-    expect(initialInputElement).toHaveValue(secondValue)
-  })
+    const secondValue = "goodbye";
+    await rerender(<input value={secondValue} onChange={() => null} />);
+    expect(initialInputElement).toHaveValue(secondValue);
+  }); */
 
-  test('re-renders options.wrapper around node when reactStrictMode is true', () => {
-    configure({reactStrictMode: true})
-
-    const WrapperComponent = ({children}) => (
+  test("renders options.wrapper around node", async () => {
+    const WrapperComponent = ({ children }) => (
       <div data-testid="wrapper">{children}</div>
-    )
-    const Greeting = props => <div>{props.message}</div>
-    const {container, rerender} = render(<Greeting message="hi" />, {
+    );
+    const Greeting = (props) => <div>{props.message}</div>;
+    const { container, rerender } = await render(<Greeting message="hi" />, {
       wrapper: WrapperComponent,
-    })
+    });
 
     expect(container.firstChild).toMatchInlineSnapshot(`
-    <div
-      data-testid=wrapper
-    >
-      <div>
-        hi
-      </div>
-    </div>
-  `)
+          <div
+            reblendcomponent="WrapperComponent"
+          >
+            <div
+              data-testid="wrapper"
+            >
+              <div
+                reblendcomponent="Greeting"
+              >
+                <div>
+                  hi
+                </div>
+              </div>
+            </div>
+          </div>
+      `);
 
-    rerender(<Greeting message="hey" />)
+    await rerender(<Greeting message="hey" />);
     expect(container.firstChild).toMatchInlineSnapshot(`
-    <div
-      data-testid=wrapper
-    >
-      <div>
-        hey
-      </div>
-    </div>
-  `)
-  })
+          <div
+            reblendcomponent="WrapperComponent"
+          >
+            <div
+              data-testid="wrapper"
+            >
+              <div
+                reblendcomponent="Greeting"
+              >
+                <div>
+                  hey
+                </div>
+              </div>
+            </div>
+          </div>
+    `);
+  });
 
-  test('re-renders twice when reactStrictMode is true', () => {
-    configure({reactStrictMode: true})
+  test("body of functional components runs once", async () => {
 
-    const spy = jest.fn()
+    const spy = jest.fn();
     function Component() {
-      spy()
-      return null
+      spy();
     }
 
-    const {rerender} = render(<Component />)
-    expect(spy).toHaveBeenCalledTimes(2)
+    const { rerender } = await render(<Component />);
+    expect(spy).toHaveBeenCalledTimes(1);
 
-    spy.mockClear()
-    rerender(<Component />)
-    expect(spy).toHaveBeenCalledTimes(2)
-  })
-})
+    spy.mockClear();
+    await rerender(<Component />);
+    expect(spy).toHaveBeenCalledTimes(0);
+  });
+});

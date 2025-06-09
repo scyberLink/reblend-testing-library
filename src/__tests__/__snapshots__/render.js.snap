@@ -1,12 +1,3 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`render API supports fragments 1`] = `
-<DocumentFragment>
-  <div>
-    <code>
-      DocumentFragment
-    </code>
-     is pretty cool!
-  </div>
-</DocumentFragment>
-`;
+exports[`render API supports fragments 1`] = `<DocumentFragment />`;

@@ -15,7 +15,7 @@ series [How to Contribute to an Open Source Project on GitHub][egghead]
 > requests from branches on your fork. To do this, run:
 >
 > ```
-> git remote add upstream https://github.com/testing-library/react-testing-library.git
+> git remote add upstream https://github.com/testing-library/reblend-testing-library.git
 > git fetch upstream
 > git branch --set-upstream-to=upstream/main main
 > ```
@@ -51,4 +51,4 @@ requests! Thanks!
 
 [egghead]:
   https://egghead.io/courses/how-to-contribute-to-an-open-source-project-on-github
-[issues]: https://github.com/testing-library/react-testing-library/issues
+[issues]: https://github.com/testing-library/reblend-testing-library/issues

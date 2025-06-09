@@ -1,4 +1,4 @@
-// Fork of https://github.com/facebook/react/blob/513417d6951fa3ff5729302b7990b84604b11afa/scripts/jest/matchers/toWarnDev.js
+// Fork of https://github.com/facebook/reblend/blob/513417d6951fa3ff5729302b7990b84604b11afa/scripts/jest/matchers/toWarnDev.js
 /**
 MIT License
 
@@ -41,7 +41,7 @@ function normalizeCodeLocInfo(str) {
   str = str.replace(/Check your code at .+?:\d+/g, 'Check your code at **')
   // V8 format:
   //  at Component (/path/filename.js:123:45)
-  // React format:
+  // Reblend format:
   //    in Component (at filename.js:123)
   // eslint-disable-next-line prefer-arrow-callback
   return str.replace(/\n +(?:at|in) ([\S]+)[^\n]*/g, function (m, name) {
@@ -99,7 +99,7 @@ const createMatcherFor = (consoleMethod, matcherName) =>
 
       const consoleSpy = (format, ...args) => {
         // Ignore uncaught errors reported by jsdom
-        // and React addendums because they're too noisy.
+        // and Reblend addendums because they're too noisy.
         if (
           !logAllErrors &&
           consoleMethod === 'error' &&

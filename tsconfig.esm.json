@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "target": "esnext" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
+    "module": "esnext" /* Specify what module code is generated. */,
+    "moduleResolution": "node",
+    "outDir": "./dist-esm"
+  },
+  "include": ["src"]
+}

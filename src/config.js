@@ -4,7 +4,7 @@ import {
 } from '@testing-library/dom'
 
 let configForRTL = {
-  reactStrictMode: false,
+  reblendStrictMode: false,
 }
 
 function getConfig() {
@@ -21,13 +21,13 @@ function configure(newConfig) {
     newConfig = newConfig(getConfig())
   }
 
-  const {reactStrictMode, ...configForDTL} = newConfig
+  const {reblendStrictMode, ...configForDTL} = newConfig
 
   configureDTL(configForDTL)
 
   configForRTL = {
     ...configForRTL,
-    reactStrictMode,
+    reblendStrictMode,
   }
 }
 

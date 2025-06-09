@@ -1,4 +1,4 @@
-// Fork of https://github.com/facebook/react/blob/513417d6951fa3ff5729302b7990b84604b11afa/scripts/jest/setupTests.js#L71-L161
+// Fork of https://github.com/facebook/reblend/blob/513417d6951fa3ff5729302b7990b84604b11afa/scripts/jest/setupTests.js#L71-L161
 /**
 MIT License
 
@@ -31,7 +31,7 @@ const shouldIgnoreConsoleError = require('./shouldIgnoreConsoleError')
 const patchConsoleMethod = (methodName, unexpectedConsoleCallStacks) => {
   const newMethod = function (format, ...args) {
     // Ignore uncaught errors reported by jsdom
-    // and React addendums because they're too noisy.
+    // and Reblend addendums because they're too noisy.
     if (methodName === 'error' && shouldIgnoreConsoleError(format, args)) {
       return
     }

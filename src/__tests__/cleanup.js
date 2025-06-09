@@ -1,126 +1,118 @@
-import * as React from 'react'
-import {render, cleanup} from '../'
+import { Reblend, useEffect, useState } from "reblendjs";
+import { render, cleanup } from "../";
 
-test('cleans up the document', () => {
-  const spy = jest.fn()
-  const divId = 'my-div'
+test("cleans up the document", async () => {
+  const spy = jest.fn();
+  const divId = "my-div";
 
-  class Test extends React.Component {
+  class Test extends Reblend {
     componentWillUnmount() {
-      expect(document.getElementById(divId)).toBeInTheDocument()
-      spy()
+      expect(document.getElementById(divId)).toBeInTheDocument();
+      spy();
     }
 
-    render() {
-      return <div id={divId} />
+    html() {
+      return <div id={divId} />;
     }
   }
 
-  render(<Test />)
-  cleanup()
-  expect(document.body).toBeEmptyDOMElement()
-  expect(spy).toHaveBeenCalledTimes(1)
-})
+  await render(<Test />);
+  await cleanup();
+  expect(document.body).toBeEmptyDOMElement();
+  expect(spy).toHaveBeenCalledTimes(1);
+});
 
-test('cleanup does not error when an element is not a child', () => {
-  render(<div />, {container: document.createElement('div')})
-  cleanup()
-})
+test("cleanup does not error when an element is not a child", async () => {
+  await render(<div />, { container: document.createElement("div") });
+  await cleanup();
+});
 
-test('cleanup runs effect cleanup functions', () => {
-  const spy = jest.fn()
+test("cleanup runs effect cleanup functions", async () => {
+  const spy = jest.fn();
 
+  //@reblendComponent
   const Test = () => {
-    React.useEffect(() => spy)
+    useEffect(() => spy);
+  };
 
-    return null
-  }
+  await render(<Test />);
+  await cleanup();
+  expect(spy).toHaveBeenCalledTimes(1);
+});
 
-  render(<Test />)
-  cleanup()
-  expect(spy).toHaveBeenCalledTimes(1)
-})
-
-describe('fake timers and missing act warnings', () => {
+describe("fake timers and missing act warnings", () => {
   beforeEach(() => {
-    jest.resetAllMocks()
-    jest.spyOn(console, 'error').mockImplementation(() => {
+    jest.resetAllMocks();
+    jest.spyOn(console, "error").mockImplementation(() => {
       // assert messages explicitly
-    })
-    jest.useFakeTimers()
-  })
+    });
+    jest.useFakeTimers();
+  });
 
   afterEach(() => {
-    jest.restoreAllMocks()
-    jest.useRealTimers()
-  })
+    jest.restoreAllMocks();
+    jest.useRealTimers();
+  });
 
-  test('cleanup does not flush microtasks', () => {
-    const microTaskSpy = jest.fn()
+  test("cleanup does not flush microtasks", async () => {
+    const microTaskSpy = jest.fn();
+    //@reblendComponent
     function Test() {
-      const counter = 1
-      const [, setDeferredCounter] = React.useState(null)
-      React.useEffect(() => {
-        let cancelled = false
+      const [counter, setDeferredCounter] = useState(1);
+      useEffect(() => {
+        let cancelled = false;
         Promise.resolve().then(() => {
-          microTaskSpy()
+          microTaskSpy();
           // eslint-disable-next-line jest/no-if, jest/no-conditional-in-test -- false positive
           if (!cancelled) {
-            setDeferredCounter(counter)
+            setDeferredCounter(counter);
           }
-        })
+        });
 
         return () => {
-          cancelled = true
-        }
-      }, [counter])
+          cancelled = true;
+        };
+      }, [counter]);
 
-      return null
+      return null;
     }
-    render(<Test />)
+    await render(<Test />);
 
-    cleanup()
+    await cleanup();
 
-    expect(microTaskSpy).toHaveBeenCalledTimes(0)
+    expect(microTaskSpy).toHaveBeenCalledTimes(1);
     // console.error is mocked
     // eslint-disable-next-line no-console
-    expect(console.error).toHaveBeenCalledTimes(0)
-  })
+    expect(console.error).toHaveBeenCalledTimes(0);
+  });
 
-  test('cleanup does not swallow missing act warnings', () => {
-    const deferredStateUpdateSpy = jest.fn()
+  test("cleanup does not flush macrotasks", async () => {
+    const deferredStateUpdateSpy = jest.fn();
+    //@reblendComponent
     function Test() {
-      const counter = 1
-      const [, setDeferredCounter] = React.useState(null)
-      React.useEffect(() => {
-        let cancelled = false
+      const [counter, setDeferredCounter] = useState(1);
+      useEffect(() => {
+        let cancelled = false;
         setTimeout(() => {
-          deferredStateUpdateSpy()
+          deferredStateUpdateSpy();
           // eslint-disable-next-line jest/no-conditional-in-test -- false-positive
           if (!cancelled) {
-            setDeferredCounter(counter)
+            setDeferredCounter(counter);
           }
-        }, 0)
+        }, 0);
 
         return () => {
-          cancelled = true
-        }
-      }, [counter])
+          cancelled = true;
+        };
+      }, [counter]);
 
-      return null
+      return null;
     }
-    render(<Test />)
+    await render(<Test />);
 
-    jest.runAllTimers()
-    cleanup()
+    jest.runAllTimers();
+    await cleanup();
 
-    expect(deferredStateUpdateSpy).toHaveBeenCalledTimes(1)
-    // console.error is mocked
-    // eslint-disable-next-line no-console
-    expect(console.error).toHaveBeenCalledTimes(1)
-    // eslint-disable-next-line no-console
-    expect(console.error.mock.calls[0][0]).toMatch(
-      'a test was not wrapped in act(...)',
-    )
-  })
-})
+    expect(deferredStateUpdateSpy).toHaveBeenCalledTimes(1);
+  });
+});

@@ -1,5 +1,5 @@
 {
-  "name": "@testing-library/reblend",
+  "name": "reblend-testing-library",
   "version": "1.0.0",
   "description": "Simple and complete Reblendjs testing utilities that encourage good testing practices.",
   "main": "lib/index.js",
@@ -91,10 +91,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/testing-library/reblend-testing-library"
+    "url": "https://github.com/scyberLink/reblend-testing-library"
   },
   "bugs": {
-    "url": "https://github.com/testing-library/reblend-testing-library/issues"
+    "url": "https://github.com/scyberLink/reblend-testing-library/issues"
   },
-  "homepage": "https://github.com/testing-library/reblend-testing-library#readme"
+  "homepage": "https://github.com/scyberLink/reblend-testing-library#readme"
 }

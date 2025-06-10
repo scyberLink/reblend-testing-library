@@ -46,17 +46,17 @@
     "@babel/plugin-transform-modules-commonjs": "^7.27.1",
     "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^5.17.0",
-    "babel-preset-reblend": "latest",
+    "babel-preset-reblend": "^7.27.4",
     "chalk": "^4.1.2",
     "jest": "^27.5.1",
     "jest-diff": "^29.7.0",
-    "reblendjs": "latest",
+    "reblendjs": "^9.3.5",
     "rimraf": "^3.0.2",
     "typescript": "^4.9.5"
   },
   "peerDependencies": {
     "@testing-library/dom": "^10.0.0",
-    "reblendjs": "latest"
+    "reblendjs": "^9.3.5"
   },
   "peerDependenciesMeta": {
     "reblendjs": {

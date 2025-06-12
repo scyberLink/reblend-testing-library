@@ -134,15 +134,15 @@ async function cleanup() {
   mountedContainers.clear();
 }
 
-async function renderHook(useRenderCallback, options = {}) {
+async function renderHook<T>(useRenderCallback: (...args: any[]) => T, options = {}) {
   const { initialProps, ...renderOptions } = options as any;
 
-  let result = useRef();
+  let result = useRef<T>();
 
   //@reblendComponent
   function TestComponent({ renderCallbackProps, refreshCode }) {
-    useEffect(() => {
-      const pendingResult = useRenderCallback(renderCallbackProps);
+    useEffect(async () => {
+      const pendingResult = await useRenderCallback(renderCallbackProps);
       result && (result.current = pendingResult);
     }, refreshCode);
 

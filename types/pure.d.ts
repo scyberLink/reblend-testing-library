@@ -18,8 +18,8 @@ export type IRenderReturnType<T = HTMLElement> = BoundFunctions<any> & {
 };
 declare function render<C = HTMLElement, T extends Queries = {}>(ui: ReblendNode, { baseElement, container, queries, wrapper, }?: IRenderOption<C> | undefined): Promise<IRenderReturnType<C>>;
 declare function cleanup(): Promise<void>;
-declare function renderHook(useRenderCallback: any, options?: {}): Promise<{
-    result: import("reblend-typing").Ref<unknown>;
+declare function renderHook<T>(useRenderCallback: (...args: any[]) => T, options?: {}): Promise<{
+    result: import("reblend-typing").Ref<T>;
     rerender: (rerenderCallbackProps: any) => Promise<void>;
     unmount: () => Promise<void>;
 }>;

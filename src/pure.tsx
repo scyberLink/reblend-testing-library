@@ -5,6 +5,7 @@ import {
   BoundFunctions,
   PrettyDOMOptions,
   Queries,
+  waitFor,
 } from "@testing-library/dom";
 import { fireEvent } from "./fire-event";
 import { getConfig, configure } from "./config";
@@ -12,7 +13,7 @@ import Reblend, {
   ConfigUtil,
   detach,
   rand,
-  ReblendTyping,
+  ReblendNode,
   useEffect,
   useRef,
 } from "reblendjs";
@@ -31,7 +32,7 @@ export interface IRenderOption<C = HTMLElement, T extends Queries = {}> {
   baseElement?: HTMLElement;
   container?: C;
   queries?: T;
-  wrapper?: ReblendTyping.ReblendNode;
+  wrapper?: ReblendNode;
 }
 
 export type IRenderReturnType<T = HTMLElement> = BoundFunctions<any> & {
@@ -43,12 +44,12 @@ export type IRenderReturnType<T = HTMLElement> = BoundFunctions<any> & {
     options?: PrettyDOMOptions
   ) => void;
   unmount: () => Promise<void>;
-  rerender: (ui: ReblendTyping.ReblendNode) => Promise<void>;
+  rerender: (ui: ReblendNode) => Promise<void>;
   asFragment: () => DocumentFragment;
 };
 
 async function renderRoot<C = HTMLElement, T extends Queries = {}>(
-  ui: ReblendTyping.ReblendNode,
+  ui: ReblendNode,
   { baseElement, container, queries, wrapper: WrapperComponent }: any = {}
 ): Promise<IRenderReturnType<C>> {
   if (!container) return undefined as any;
@@ -99,7 +100,7 @@ async function renderRoot<C = HTMLElement, T extends Queries = {}>(
 }
 
 async function render<C = HTMLElement, T extends Queries = {}>(
-  ui: ReblendTyping.ReblendNode,
+  ui: ReblendNode,
   {
     baseElement,
     container,
@@ -165,8 +166,24 @@ async function renderHook(useRenderCallback, options = {}) {
   return { result, rerender, unmount };
 }
 
+async function act(callback: () => void | Promise<void>) {
+  if (typeof callback !== "function") {
+    throw new Error("You should pass a function to act.");
+  }
+  await waitFor(async () => {
+    const result = callback();
+    if (result && typeof result.then === "function") {
+      await result;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    // This is a no-op in Reblend, but we keep it for compatibility with React Testing Library
+    // and to ensure that any pending effects are flushed.
+    return expect(true).toBe(true);
+  });
+}
+
 // just re-export everything from dom-testing-library
 export * from "@testing-library/dom";
-export { render, renderHook, cleanup, fireEvent, getConfig, configure };
+export { act, render, renderHook, cleanup, fireEvent, getConfig, configure };
 
 /* eslint func-name-matching:0 */

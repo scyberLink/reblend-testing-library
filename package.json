@@ -1,6 +1,6 @@
 {
   "name": "reblend-testing-library",
-  "version": "1.0.1",
+  "version": "1.2.0",
   "description": "Simple and complete Reblendjs testing utilities that encourage good testing practices.",
   "main": "lib/index.js",
   "module": "lib-esm/index.js",
@@ -15,7 +15,9 @@
     "test:watch": "jest --watch",
     "build:test": "npm run build && npm test",
     "prepublishOnly": "npm run build",
-    "build": "tsc && tsc -p tsconfig.esm.json && tsc -p tsconfig.types.json && babel dist --out-dir lib --presets=reblend && babel dist-esm --out-dir lib-esm --presets=reblend"
+    "build:cjs": "babel src --out-dir lib --extensions '.tsx,.ts,.js'",
+    "build:esm": "babel src --out-dir lib-esm --presets=reblend --extensions '.tsx,.ts,.js' --no-babelrc ",
+    "build": "tsc -p tsconfig.types.json && npm run build:cjs && npm run build:esm"
   },
   "files": [
     "lib",
@@ -43,20 +45,19 @@
   "devDependencies": {
     "@babel/cli": "^7.27.2",
     "@babel/core": "^7.27.4",
-    "@babel/plugin-transform-modules-commonjs": "^7.27.1",
     "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^5.17.0",
-    "babel-preset-reblend": "^7.27.4",
+    "babel-preset-reblend": "^8.1.0",
     "chalk": "^4.1.2",
     "jest": "^27.5.1",
     "jest-diff": "^29.7.0",
-    "reblendjs": "^9.3.5",
+    "reblendjs": "^9.3.6",
     "rimraf": "^3.0.2",
     "typescript": "^4.9.5"
   },
   "peerDependencies": {
     "@testing-library/dom": "^10.0.0",
-    "reblendjs": "^9.3.5"
+    "reblendjs": "^9.3.6"
   },
   "peerDependenciesMeta": {
     "reblendjs": {

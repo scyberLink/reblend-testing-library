@@ -1,5 +1,5 @@
 import Reblend, { useEffect, useState } from "reblendjs";
-import { render, waitForElementToBeRemoved, screen, waitFor } from "../";
+import { render, waitForElementToBeRemoved, screen, waitFor, act } from "../";
 
 describe.each([
   ["real timers", () => jest.useRealTimers()],
@@ -59,7 +59,7 @@ describe.each([
       await render(<ComponentWithMacrotaskLoader />);
       const loading = () => screen.getByText("Loading...");
       await waitForElementToBeRemoved(loading);
-      await waitFor(() => {
+      await act(() => {
         expect(screen.getByTestId("message")).toHaveTextContent(/Hello World/);
       });
     });
@@ -68,14 +68,14 @@ describe.each([
       await render(<ComponentWithMacrotaskLoader />);
       await waitFor(() => screen.getByText(/Loading../));
       await waitFor(() => screen.getByText(/Loaded this message:/));
-      await waitFor(() => {
+      await act(() => {
         expect(screen.getByTestId("message")).toHaveTextContent(/Hello World/);
       });
     });
 
     test("findBy", async () => {
       await render(<ComponentWithMacrotaskLoader />);
-      await waitFor(async () => {
+      await act(async () => {
         await expect(screen.findByTestId("message")).resolves.toHaveTextContent(
           /Hello World/
         );

@@ -47,7 +47,7 @@ const sleep = (t) => new Promise((resolve) => setTimeout(resolve, t));
 
 test("unmounts a component", async () => {
   const { unmount, container, debug } = await render(<StopWatch />);
-  debug(container);
+  //debug(container);
   fireEvent.click(screen.getByText("Start"));
   await unmount();
   // hey there reader! You don't need to have an assertion like this one

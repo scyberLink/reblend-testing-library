@@ -143,22 +143,22 @@ async function renderHook<T>(
   let result = useRef<T>();
 
   //@reblendComponent
-  async function TestComponent(props) {
-    const pendingResult = await useRenderCallback(props);
+  async function TestComponent({ initialProps }: { initialProps: any }) {
+    const pendingResult = await useRenderCallback(initialProps);
     result.current = pendingResult;
     return null;
   }
 
   const { rerender: baseRerender, unmount } = await render(
     //@ts-ignore
-    <TestComponent {...initialProps} />,
+    <TestComponent initialProps={initialProps} />,
     renderOptions
   );
 
   async function rerender(rerenderCallbackProps) {
     return await baseRerender(
       //@ts-ignore
-      <TestComponent {...rerenderCallbackProps} />
+      <TestComponent initialProps={rerenderCallbackProps} />
     );
   }
 

@@ -44,8 +44,8 @@ test("allows rerendering", async () => {
     const [right, setRight] = useState("right");
     const result = { result: null };
 
-    useProps((_props, currentProps) => {
-      switch (currentProps.branch) {
+    useProps((_props, { initialProps: { branch } }) => {
+      switch (branch) {
         case "left":
           result.result = [left, setLeft];
           break;

@@ -143,26 +143,22 @@ async function renderHook<T>(
   let result = useRef<T>();
 
   //@reblendComponent
-  function TestComponent({ renderCallbackProps, refreshCode }) {
-    useEffect(async () => {
-      const pendingResult = await useRenderCallback(renderCallbackProps);
-      result && (result.current = pendingResult);
-    }, refreshCode);
-
+  async function TestComponent(props) {
+    const pendingResult = await useRenderCallback(props);
+    result.current = pendingResult;
     return null;
   }
 
   const { rerender: baseRerender, unmount } = await render(
-    <TestComponent renderCallbackProps={initialProps} refreshCode={0} />,
+    //@ts-ignore
+    <TestComponent {...initialProps} />,
     renderOptions
   );
 
   async function rerender(rerenderCallbackProps) {
     return await baseRerender(
-      <TestComponent
-        renderCallbackProps={rerenderCallbackProps}
-        refreshCode={rand(101, 4321)}
-      />
+      //@ts-ignore
+      <TestComponent {...rerenderCallbackProps} />
     );
   }
 

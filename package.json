@@ -1,6 +1,6 @@
 {
   "name": "reblend-testing-library",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Simple and complete Reblendjs testing utilities that encourage good testing practices.",
   "main": "lib/index.js",
   "module": "lib-esm/index.js",
@@ -40,22 +40,22 @@
   "author": "Emmanuel Paul Elom <scansioquielom@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "@testing-library/jest-dom": "^5.17.0",
-    "@testing-library/dom": "^10.0.0"
+    "@testing-library/dom": "^10.0.0",
+    "@testing-library/jest-dom": "^5.17.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.27.2",
     "@babel/core": "^7.27.4",
-    "babel-preset-reblend": "^10.0.0",
+    "babel-preset-reblend": "^11.0.2",
     "chalk": "^4.1.2",
     "jest": "^27.5.1",
     "jest-diff": "^29.7.0",
-    "reblendjs": "^10.0.0",
+    "reblendjs": "^10.2.2",
     "rimraf": "^3.0.2",
     "typescript": "^4.9.5"
   },
   "peerDependencies": {
-    "reblendjs": "^10.0.0"
+    "reblendjs": "^10.2.2"
   },
   "eslintConfig": {
     "parserOptions": {

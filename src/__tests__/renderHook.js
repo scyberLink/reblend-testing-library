@@ -5,57 +5,73 @@ import Reblend, {
   useState,
 } from "reblendjs";
 import { renderHook } from "../pure";
+import { useProps } from "reblendjs";
 
-/* 
 //Reblend custom hooks are not yet stable
 test("gives committed result", async () => {
   //@ReblendHook
   function useStateHookTest() {
     const [states, setStates] = useState(1);
 
+    const state = {
+      states,
+      setStates,
+    };
+
     useEffect(() => {
       setStates(2);
     }, []);
 
-    return [states, setStates];
+    useEffect(() => {
+      state.states = states;
+    }, states);
+
+    return state;
   }
 
   const { result } = await renderHook(useStateHookTest);
 
-  expect(result.current).toEqual([2, expect.any(Function)]);
-}); */
+  expect(result.current).toEqual({
+    states: 2,
+    setStates: expect.any(Function),
+  });
+});
 
 test("allows rerendering", async () => {
   //@ReblendHook
-  function useLeftRight({ branch }) {
+  function useLeftRight() {
     const [left, setLeft] = useState("left");
     const [right, setRight] = useState("right");
+    const result = { result: null };
 
-    // eslint-disable-next-line jest/no-if, jest/no-conditional-in-test -- false-positive
-    return (() => {
-      switch (branch) {
+    useProps((_props, currentProps) => {
+      switch (currentProps.branch) {
         case "left":
-          return [left, setLeft];
+          result.result = [left, setLeft];
+          break;
         case "right":
-          return [right, setRight];
+          result.result = [right, setRight];
+          break;
 
         default:
           throw new Error(
             "No Props passed. This is a bug in the implementation"
           );
       }
-    })();
+    });
+
+    return result;
   }
 
   const { result, rerender } = await renderHook(useLeftRight, {
     initialProps: { branch: "left" },
   });
 
-  expect(result.current).toEqual(["left", expect.any(Function)]);
+  expect(result.current.result).toEqual(["left", expect.any(Function)]);
 
   await rerender({ branch: "right" });
 
-  expect(result.current).toEqual(["right", expect.any(Function)]);
+  expect(result.current.result).toEqual(["right", expect.any(Function)]);
 });
 
 test("allows wrapper components", async () => {

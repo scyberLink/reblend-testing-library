@@ -44,21 +44,27 @@ test("allows rerendering", async () => {
     const [right, setRight] = useState("right");
     const result = { result: null };
 
-    useProps((_props, { initialProps: { branch } }) => {
-      switch (branch) {
-        case "left":
-          result.result = [left, setLeft];
-          break;
-        case "right":
-          result.result = [right, setRight];
-          break;
+    useProps(
+      ({
+        current: {
+          initialProps: { branch },
+        },
+      }) => {
+        switch (branch) {
+          case "left":
+            result.result = [left, setLeft];
+            break;
+          case "right":
+            result.result = [right, setRight];
+            break;
 
-        default:
-          throw new Error(
-            "No Props passed. This is a bug in the implementation"
-          );
+          default:
+            throw new Error(
+              "No Props passed. This is a bug in the implementation"
+            );
+        }
       }
-    });
+    );
 
     return result;
   }
